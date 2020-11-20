@@ -22,20 +22,25 @@ var changeAlgorithm = (totalImport, quantityGiven, availableChange) => {
 
 var coinOrBill = (value, quantity) => {
   var coinOrBillText = "";
+  var coinOrBillClass="";
   if (value >= 5) {
     if (quantity === 1) {
       coinOrBillText = "billete";
+      coinOrBillClass = "bill"
     } else {
       coinOrBillText = "billetes";
+      coinOrBillClass = "bills";
     }
   } else {
     if (quantity === 1) {
       coinOrBillText = "moneda";
+      coinOrBillClass = "coin"
     } else {
       coinOrBillText = "monedas";
+      coinOrBillClass = "coins"
     }
   }
-  return coinOrBillText;
+  return [coinOrBillText, coinOrBillClass];
 }
 
 var createHtmlStructure = (changeBackList, totalBack, rootElement ) => {
@@ -45,8 +50,12 @@ var createHtmlStructure = (changeBackList, totalBack, rootElement ) => {
       var li = document.createElement("li");
       var span = document.createElement("span");    
 
+      var coinOrBillArray = coinOrBill(changeBackList[i][0], changeBackList[i][1])
+      console.log(coinOrBillArray)
+      span.setAttribute("class",coinOrBillArray[1])
+
       span.textContent =
-        changeBackList[i][1] + " " + coinOrBill(changeBackList[i][0], changeBackList[i][1]) + " de " + changeBackList[i][0].toFixed(2) + "€";
+        changeBackList[i][1] + " " + coinOrBillArray[0] + " de " + changeBackList[i][0].toFixed(2) + "€";
 
       li.appendChild(span);
       ul.appendChild(li);
