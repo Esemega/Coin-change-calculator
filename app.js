@@ -1,81 +1,92 @@
 var AVAILABLE_CHANGE = [200, 100, 50, 20, 10, 5, 2, 1, 0.5, 0.2, 0.1, 0.05, 0.02, 0.01];
 
-var changeAlgorithm = () => {
-  //get input values
-  var totalImport = document.getElementById("import").value;
-  var quantityGiven = document.getElementById("quantity-given").value;
-  console.log({ totalImport });
-  console.log({ quantityGiven });
+var changeAlgorithm = (totalImport, quantityGiven, availableChange) => {
   //calculate the different to know the change back
-  var initialdifference = quantityGiven - totalImport;
-  var difference = initialdifference;
-  console.log({ difference });
-
-  if (initialdifference <= 0) {
-    var h2 = document.createElement("h2");
-    h2.textContent =
-      "La cantidad entregada debe ser mayor que el importe total.";
-
-    var result = document.getElementById("result");
-    result.innerHTML = "";
-    result.appendChild(h2);
-  } else {
-    //Change algorithm
+  var difference = quantityGiven - totalImport;
+      //Change algorithm
     //1. look for the coin or bill bigger that can be given
     var changeBack = [];
-    for (const badge of AVAILABLE_CHANGE) {
-      console.log(badge, "difference/ badge", difference / badge);
+    for (const badge of availableChange) {
       if (difference / badge >= 1) {
         changeBack.push([badge, Math.trunc(difference / badge)]);
         difference =
           Math.round(
             (difference - badge * Math.floor(difference / badge)) * 100
           ) / 100;
-        console.log("if-difference", difference);
       }
       //2. repeat the 1. until the difference is 0
       if (difference === 0) break;
     }
-    console.log("changeBack", changeBack);
+    return changeBack;
+}
 
-    var ol = document.createElement("ul");
+var coinOrBill = (value, quantity) => {
+  var coinOrBillText = "";
+  if (value >= 5) {
+    if (quantity === 1) {
+      coinOrBillText = "billete";
+    } else {
+      coinOrBillText = "billetes";
+    }
+  } else {
+    if (quantity === 1) {
+      coinOrBillText = "moneda";
+    } else {
+      coinOrBillText = "monedas";
+    }
+  }
+  return coinOrBillText;
+}
 
-    for (i = 0; i < changeBack.length; i++) {
+var createHtmlStructure = (changeBackList, totalBack, rootElement ) => {
+  var ul = document.createElement("ul");
+
+    for (i = 0; i < changeBackList.length; i++) {
       var li = document.createElement("li");
-      var span = document.createElement("span");
-
-      var coinOrBill = "";
-
-      if (changeBack[i][0] >= 5) {
-        if (changeBack[i][1] === 1) {
-          coinOrBill = "billete";
-        } else {
-          coinOrBill = "billetes";
-        }
-      } else {
-        if (changeBack[i][1] === 1) {
-          coinOrBill = "moneda";
-        } else {
-          coinOrBill = "monedas";
-        }
-      }
+      var span = document.createElement("span");    
 
       span.textContent =
-        changeBack[i][1] + " " + coinOrBill + " de " + changeBack[i][0] + "€";
+        changeBackList[i][1] + " " + coinOrBill(changeBackList[i][0], changeBackList[i][1]) + " de " + changeBackList[i][0].toFixed(2) + "€";
 
       li.appendChild(span);
-      ol.appendChild(li);
+      ul.appendChild(li);
     }
 
     var h3 = document.createElement("h3");
-    h3.textContent = "Total a devolver: " + initialdifference.toFixed(2) + " €";
+    h3.textContent = "Total a devolver: " + totalBack.toFixed(2) + " €";
 
-    var result = document.getElementById("result");
+    
+    rootElement.innerHTML = "";
+    rootElement.appendChild(h3);
+    rootElement.appendChild(ul);
+}
+
+var buttonEventHandler = () => {
+  //get input values
+  var totalImport = document.getElementById("import").value;
+  var quantityGiven = document.getElementById("quantity-given").value;
+
+  //calculate the initial difference
+  var initialdifference = quantityGiven - totalImport;
+
+  //get html result div
+  var result = document.getElementById("result");
+
+  if (initialdifference <= 0) {
+    var h2 = document.createElement("h2");
+    h2.setAttribute("id", "error-message")
+    h2.textContent =
+      "La cantidad entregada debe ser mayor que el importe total.";
+
     result.innerHTML = "";
-    result.appendChild(h3);
-    result.appendChild(ol);
+    result.appendChild(h2);
+  } else {
+
+    var changeBack = changeAlgorithm(totalImport, quantityGiven, AVAILABLE_CHANGE);
+    createHtmlStructure(changeBack, initialdifference, result);
+    
   }
 };
 
 //Event handler for button
-document.getElementById("calculate").addEventListener("click", changeAlgorithm);
+document.getElementById("calculate").addEventListener("click", buttonEventHandler);
