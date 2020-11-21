@@ -6,13 +6,21 @@
     <title>Calculadora de cambio óptimo de billetes y monedas</title>
 </head>
 <body>
-    <h1>Calculadora de cambio óptimo de billetes y monedas</h1>
-    <label for="import">Importe total</label>
-    <input id="import" name="import" type="number">
-    <label for="quantity-given">Cantidad que se entrega</label>
-    <input type="number" name="quantity-given" id="quantity-given">
-    <button id="calculate">CALCULAR</button>
-    <div id="result"></div>
+    <header>
+        <h1>Calculadora de cambio óptimo de billetes y monedas</h1>
+    </header>
+    <main>
+        <div id="available-change"></div>
+        <div id="change-calculator">
+            <h2>Calculadora de cambio</h2>
+            <label for="import">Importe total</label>
+            <input id="import" name="import" type="number">
+            <label for="quantity-given">Cantidad pagada</label>
+            <input type="number" name="quantity-given" id="quantity-given">
+            <button id="calculate">CALCULAR</button>
+        </div>
+        <div id="result"></div>
+    </main>
 
     <script src="app.js"></script>
 </body>

@@ -1,5 +1,54 @@
 var AVAILABLE_CHANGE = [200, 100, 50, 20, 10, 5, 2, 1, 0.5, 0.2, 0.1, 0.05, 0.02, 0.01];
 
+//Create an html initial structure with javascript
+var createInitialHtmlStructure = (availableChange, rootElement) => {
+  var ul = document.createElement("ul");
+  ul.setAttribute("id", "available-change")
+  
+  for (i = 0; i < availableChange.length; i++) {
+    var li = document.createElement("li");
+    var label = document.createElement("label")
+    var input = document.createElement("input");
+    var span = document.createElement("span");    
+
+    var labelText = (availableChange[i] >= 1? (availableChange[i] + "€") : (availableChange[i]*100 + "cent")) + " x "; 
+    label.textContent = labelText;
+    label.setAttribute("for", availableChange[i]);
+
+    input.setAttribute("id", availableChange[i]);
+
+    span.textContent = "Unidades";
+
+    li.appendChild(label);
+    li.appendChild(input);
+    li.appendChild(span);
+    ul.appendChild(li);
+    }
+
+  var h2 = document.createElement("h2");
+  h2.textContent = "Cambio disponible en caja";
+
+  rootElement.appendChild(h2);
+  rootElement.appendChild(ul);
+}
+
+var getAvailableChangeInputValue = (availableChange) => {
+
+  var availableChangeInputArray = [];
+
+  for (i = 0; i < availableChange.length; i++) {
+    var inputArray = [];
+    var input = document.getElementById(availableChange[i]);
+    inputArray[0] = input.id;
+    inputArray[1] = input.value;
+    availableChangeInputArray.push(inputArray);
+  }
+
+  console.log(availableChangeInputArray);
+
+
+}
+
 var changeAlgorithm = (totalImport, quantityGiven, availableChange) => {
   //calculate the different to know the change back
   var difference = quantityGiven - totalImport;
@@ -43,7 +92,7 @@ var coinOrBill = (value, quantity) => {
   return [coinOrBillText, coinOrBillClass];
 }
 
-var createHtmlStructure = (changeBackList, totalBack, rootElement ) => {
+var createHtmlChangeBackElements = (changeBackList, totalBack, rootElement ) => {
   var ul = document.createElement("ul");
 
     for (i = 0; i < changeBackList.length; i++) {
@@ -51,7 +100,7 @@ var createHtmlStructure = (changeBackList, totalBack, rootElement ) => {
       var span = document.createElement("span");    
 
       var coinOrBillArray = coinOrBill(changeBackList[i][0], changeBackList[i][1])
-      console.log(coinOrBillArray)
+      
       span.setAttribute("class",coinOrBillArray[1])
 
       span.textContent =
@@ -92,10 +141,16 @@ var buttonEventHandler = () => {
   } else {
 
     var changeBack = changeAlgorithm(totalImport, quantityGiven, AVAILABLE_CHANGE);
-    createHtmlStructure(changeBack, initialdifference, result);
+    createHtmlChangeBackElements(changeBack, initialdifference, result);
     
   }
+
+  getAvailableChangeInputValue(AVAILABLE_CHANGE);
+
 };
 
 //Event handler for button
 document.getElementById("calculate").addEventListener("click", buttonEventHandler);
+
+var rootElement = document.getElementById("available-change");
+createInitialHtmlStructure(AVAILABLE_CHANGE, rootElement);
