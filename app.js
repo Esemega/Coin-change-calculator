@@ -5,6 +5,7 @@ var AVAILABLE_CHANGE = [200, 100, 50, 20, 10, 5, 2, 1, 0.5, 0.2, 0.1, 0.05, 0.02
 var createInitialHtmlStructure = (availableChange, rootElement) => {
   var ul = document.createElement("ul");
   ul.setAttribute("id", "available-change-list");
+  ul.classList.add("content")
 
   for (i = 0; i < availableChange.length; i++) {
     var li = document.createElement("li");
@@ -18,7 +19,6 @@ var createInitialHtmlStructure = (availableChange, rootElement) => {
 
     input.setAttribute("id", availableChange[i]);
     input.classList.add("badge");
-    input.value = 100;
 
     span.textContent = "Unidades";
 
@@ -30,23 +30,30 @@ var createInitialHtmlStructure = (availableChange, rootElement) => {
 
   var h2 = document.createElement("h2");
   h2.textContent = "Cambio disponible en caja";
+  
+  var button = document.createElement("button");
+  button.type = "button";
+  button.textContent = "+";
+  button.classList.add("collapsible");
+  button.setAttribute("id", "collapsible")
 
   rootElement.appendChild(h2);
+  rootElement.appendChild(button);
   rootElement.appendChild(ul);
 };
 
 var getAvailableChangeInputValue = () => {
-  var inputList = document.getElementsByClassName("badge");
+    var inputList = document.getElementsByClassName("badge");
 
-  var availableChangeInputArray = [];
+    var availableChangeInputArray = [];
 
-  for (i = 0; i < inputList.length; i++) {
-    var inputArray = [];
-    var input = document.getElementById(inputList[i].id);
-    inputArray[0] = input.id;
-    inputArray[1] = input.value;
-    availableChangeInputArray.push(inputArray);
-  }
+    for (i = 0; i < inputList.length; i++) {
+      var inputArray = [];
+      var input = document.getElementById(inputList[i].id);
+      inputArray[0] = input.id;
+      inputArray[1] = input.value;
+      availableChangeInputArray.push(inputArray);
+    }
 
   return availableChangeInputArray;
 };
@@ -162,7 +169,26 @@ var buttonEventHandler = () => {
 
     showErrorMessage(errorMessage, result, true);
   } else {
-    var availableChangeInput = getAvailableChangeInputValue();
+    
+    var collapsibleButton = document.getElementById("collapsible");
+    var availableChangeInput = [];
+
+    if (collapsibleButton.classList.contains("active")) {
+
+      availableChangeInput = getAvailableChangeInputValue();
+
+      
+    } else {
+      
+      for (i = 0; i < AVAILABLE_CHANGE.length; i++) {
+        var inputArray = [];
+        inputArray[0] = AVAILABLE_CHANGE[i];
+        inputArray[1] = Infinity;
+        availableChangeInput.push(inputArray);
+      }
+    }
+
+    
     var changeBack = changeAlgorithm(
       totalImport,
       quantityGiven,
@@ -182,11 +208,22 @@ var buttonEventHandler = () => {
   }
 };
 
-document.getElementById("import").value = 123.56;
-document.getElementById("quantity-given").value = 130;
 
+
+var fold = () => {
+  var collapsibleButton = document.getElementById("collapsible");
+  collapsibleButton.classList.toggle("active");
+  var content = collapsibleButton.nextElementSibling;
+  if (content.style.display === "block") {
+    content.style.display = "none";
+  } else {
+    content.style.display = "block";
+  }
+}
 //Event handler for button
 document.getElementById("calculate").addEventListener("click", buttonEventHandler);
 
 var rootElement = document.getElementById("available-change");
 createInitialHtmlStructure(AVAILABLE_CHANGE, rootElement);
+
+document.getElementById("collapsible").addEventListener("click", fold);
